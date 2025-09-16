@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ley de Enfriamiento de Newton - Estilo Neón</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+        
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+            --neon-yellow: #fff01f;
+            --dark-bg: #0a0a1a;
+            --darker-bg: #050510;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--darker-bg);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Fondos animados */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: rgba(0, 243, 255, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px var(--neon-blue);
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100vw);
+                opacity: 0;
+            }
+        }
+        
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            perspective: 500px;
+            transform-style: preserve-3d;
+            transform: rotateX(75deg);
+            animation: gridMove 20s infinite linear;
+        }
+        
+        @keyframes gridMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 30px;
+            }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+            position: relative;
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue);
+            animation: pulsate 2s infinite alternate;
+        }
+        
+        @keyframes pulsate {
+            0% {
+                text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue);
+            }
+            100% {
+                text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-blue), 0 0 45px var(--neon-blue);
+            }
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 5px var(--neon-green);
+            letter-spacing: 2px;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .panel {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(10, 10, 26, 0.8);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .panel:hover {
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-pink);
+            text-shadow: 0 0 5px var(--neon-pink);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 1px solid rgba(255, 0, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--neon-blue);
+            text-shadow: 0 0 3px var(--neon-blue);
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(5, 5, 16, 0.8);
+            border: 1px solid var(--neon-blue);
+            border-radius: 5px;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+        
+        button {
+            background: transparent;
+            color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+            transition: all 0.3s ease;
+            text-shadow: 0 0 3px var(--neon-green);
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background: rgba(57, 255, 20, 0.1);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(5, 5, 16, 0.8);
+            border-radius: 8px;
+            border-left: 4px solid var(--neon-yellow);
+        }
+        
+        .result h3 {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 5px var(--neon-yellow);
+            margin-bottom: 15px;
+        }
+        
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--neon-yellow);
+            text-shadow: 0 0 10px var(--neon-yellow);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .simulation-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .thermometer {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .thermometer-body {
+            width: 30px;
+            height: 180px;
+            background: linear-gradient(to top, #ff0000 0%, #ff9900 25%, #ffff00 50%, #00ff00 75%, #00ffff 100%);
+            border-radius: 15px 15px 0 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+        
+        .thermometer-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--neon-pink);
+            transition: height 1s ease;
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+        
+        .thermometer-bulb {
+            width: 50px;
+            height: 50px;
+            background-color: var(--neon-pink);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -25px;
+            left: -10px;
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+        
+        .temperature-markers {
+            position: absolute;
+            right: -30px;
+            top: 0;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .marker {
+            color: white;
+            font-size: 0.8rem;
+            text-shadow: 0 0 3px white;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid rgba(0, 243, 255, 0.3);
+            font-size: 0.9rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 3px var(--neon-blue);
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="particles" id="particles"></div>
+        <div class="grid-lines"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>Ley de Enfriamiento de Newton</h1>
+            <p class="subtitle">Determinación del tiempo de muerte mediante análisis de temperatura corporal</p>
+        </header>
+        
+        <div class="content">
+            <div class="panel">
+                <h2>Calculadora</h2>
+                <div class="form-group">
+                    <label for="temp-initial">Temperatura inicial del cuerpo (°F):</label>
+                    <input type="number" id="temp-initial" value="79.5" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="temp-hour-later">Temperatura después de 1 hora (°F):</label>
+                    <input type="number" id="temp-hour-later" value="78.0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="temp-room">Temperatura ambiente (°F):</label>
+                    <input type="number" id="temp-room" value="69.0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label for="temp-normal">Temperatura corporal normal (°F):</label>
+                    <input type="number" id="temp-normal" value="98.6" step="0.1">
+                </div>
+                
+                <button id="calculate-btn">Calcular Tiempo de Muerte</button>
+                <button id="reset-btn">Reiniciar Valores</button>
+                
+                <div class="result">
+                    <h3>Resultado</h3>
+                    <p>El tiempo de muerte estimado es:</p>
+                    <p class="result-value" id="time-of-death">--:-- PM</p>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Simulación</h2>
+                <div class="chart-container">
+                    <canvas id="cooling-chart"></canvas>
+                </div>
+                
+                <div class="thermometer">
+                    <div class="thermometer-body">
+                        <div class="thermometer-fill" id="thermometer-fill" style="height: 50%;"></div>
+                        <div class="thermometer-bulb"></div>
+                        <div class="temperature-markers">
+                            <span class="marker">100°F</span>
+                            <span class="marker">90°F</span>
+                            <span class="marker">80°F</span>
+                            <span class="marker">70°F</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="simulation-controls">
+                    <button id="play-btn">Reproducir</button>
+                    <button id="pause-btn">Pausar</button>
+                    <button id="reset-sim-btn">Reiniciar Simulación</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Explicación Científica</h2>
+            <p>La Ley de Enfriamiento de Newton establece que la tasa de enfriamiento de un objeto es proporcional a la diferencia entre su temperatura y la temperatura del ambiente:</p>
+            <p style="text-align: center; margin: 15px 0; font-size: 1.2rem;">
+                <strong>T(t) = T<sub>s</sub> + (T<sub>0</sub> - T<sub>s</sub>) · e<sup>-kt</sup></strong>
+            </p>
+            <p>Donde:</p>
+            <ul style="list-style-position: inside; margin-left: 20px;">
+                <li><strong>T(t)</strong>: Temperatura en el tiempo t</li>
+                <li><strong>T<sub>s</sub></strong>: Temperatura del ambiente</li>
+                <li><strong>T<sub>0</sub></strong>: Temperatura inicial del objeto</li>
+                <li><strong>k</strong>: Constante de enfriamiento</li>
+                <li><strong>t</strong>: Tiempo transcurrido</li>
+            </ul>
+            <p>En la investigación forense, esta ley se utiliza para estimar el tiempo de muerte midiendo la temperatura corporal en diferentes momentos y resolviendo la ecuación para encontrar el tiempo en que la temperatura era 98.6°F (temperatura corporal normal).</p>
+        </div>
+        
+        <footer>
+            <p>Simulación de la Ley de Enfriamiento de Newton | Análisis Forense con Métodos Numéricos</p>
+        </footer>
+    </div>
+
+    <script>
+        // Crear partículas de fondo
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Posición aleatoria
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                particle.style.left = `${x}vw`;
+                particle.style.top = `${y}vh`;
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 3 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Retraso de animación aleatorio
+                const delay = Math.random() * 15;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Variables globales
+        let coolingChart;
+        let animationInterval;
+        let currentTime = 0;
+        let kConstant = 0;
+        
+        // Elementos DOM
+        const tempInitialInput = document.getElementById('temp-initial');
+        const tempHourLaterInput = document.getElementById('temp-hour-later');
+        const tempRoomInput = document.getElementById('temp-room');
+        const tempNormalInput = document.getElementById('temp-normal');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetSimBtn = document.getElementById('reset-sim-btn');
+        const timeOfDeath = document.getElementById('time-of-death');
+        const thermometerFill = document.getElementById('thermometer-fill');
+        
+        // Inicializar la gráfica
+        function initChart() {
+            const ctx = document.getElementById('cooling-chart').getContext('2d');
+            coolingChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temperatura corporal (°F)',
+                        data: [],
+                        borderColor: '#ff00ff',
+                        backgroundColor: 'rgba(255, 0, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ff00ff',
+                        pointBorderColor: '#ffffff',
+                        pointHoverRadius: 6,
+                        pointRadius: 4,
+                        pointBorderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 60,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Temperatura (°F)',
+                                color: '#00f3ff'
+                            },
+                            grid: {
+                                color: 'rgba(0, 243, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#00f3ff'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tiempo (horas)',
+                                color: '#00f3ff'
+                            },
+                            grid: {
+                                color: 'rgba(0, 243, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#00f3ff'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#00f3ff',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 26, 0.9)',
+                            titleColor: '#ff00ff',
+                            bodyColor: '#00f3ff',
+                            borderColor: '#00f3ff',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}°F`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Calcular el resultado inicial
+            calculateTimeOfDeath();
+        }
+        
+        // Calcular la constante k
+        function calculateK() {
+            const T0 = parseFloat(tempInitialInput.value);
+            const T1 = parseFloat(tempHourLaterInput.value);
+            const Ts = parseFloat(tempRoomInput.value);
+            
+            // T(t) = Ts + (T0 - Ts) * e^(-kt)
+            // Para t=1 hora: T1 = Ts + (T0 - Ts) * e^(-k)
+            // Resolver para k
+            return -Math.log((T1 - Ts) / (T0 - Ts));
+        }
+        
+        // Calcular el tiempo de muerte
+        function calculateTimeOfDeath() {
+            const T0 = parseFloat(tempInitialInput.value);
+            const T1 = parseFloat(tempHourLaterInput.value);
+            const Ts = parseFloat(tempRoomInput.value);
+            const T_normal = parseFloat(tempNormalInput.value);
+            
+            if (isNaN(T0) || isNaN(T1) || isNaN(Ts) || isNaN(T_normal)) {
+                alert('Por favor, introduce todos los valores numéricos.');
+                return;
+            }
+            
+            if (T0 <= Ts || T1 <= Ts) {
+                alert('La temperatura del cuerpo debe ser mayor que la temperatura ambiente.');
+                return;
+            }
+            
+            // Calcular constante k
+            kConstant = calculateK();
+            
+            // Calcular el tiempo desde la muerte hasta la primera medición
+            // T(t) = Ts + (T_normal - Ts) * e^(-kt)
+            // Resolver para t: t = -ln((T(t) - Ts)/(T_normal - Ts)) / k
+            const timeFromDeath = -Math.log((T0 - Ts) / (T_normal - Ts)) / kConstant;
+            
+            // La primera medición fue a las 9:18 PM
+            // Calcular la hora de muerte
+            const measurementTime = new Date();
+            measurementTime.setHours(21, 18, 0); // 9:18 PM
+            
+            const deathTime = new Date(measurementTime.getTime() - timeFromDeath * 3600000);
+            
+            // Formatear la hora
+            const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+            timeOfDeath.textContent = deathTime.toLocaleTimeString('es-ES', options);
+            
+            // Actualizar la gráfica
+            updateChart();
+            
+            return timeFromDeath;
+        }
+        
+        // Actualizar la gráfica
+        function updateChart() {
+            const Ts = parseFloat(tempRoomInput.value);
+            const T_normal = parseFloat(tempNormalInput.value);
+            const timeFromDeath = calculateTimeOfDeath();
+            
+            const timeValues = [];
+            const tempValues = [];
+            
+            // Generar datos para el gráfico
+            const maxTime = timeFromDeath * 1.5; // 1.5 veces el tiempo desde la muerte
+            const step = maxTime / 50;
+            
+            for (let t = 0; t <= maxTime; t += step) {
+                timeValues.push(t);
+                tempValues.push(Ts + (T_normal - Ts) * Math.exp(-kConstant * t));
+            }
+            
+            coolingChart.data.labels = timeValues;
+            coolingChart.data.datasets[0].data = tempValues;
+            coolingChart.update();
+        }
+        
+        // Iniciar la animación de enfriamiento
+        function startAnimation() {
+            clearInterval(animationInterval);
+            const Ts = parseFloat(tempRoomInput.value);
+            const T_normal = parseFloat(tempNormalInput.value);
+            
+            currentTime = 0;
+            
+            animationInterval = setInterval(() => {
+                currentTime += 0.1; // Incrementar en 0.1 horas
+                const temperature = Ts + (T_normal - Ts) * Math.exp(-kConstant * currentTime);
+                
+                // Actualizar el termómetro
+                const fillHeight = ((temperature - 70) / 30) * 100;
+                thermometerFill.style.height = `${Math.max(0, Math.min(100, fillHeight))}%`;
+                
+                // Detener la animación cuando se alcanza la temperatura ambiente
+                if (temperature <= Ts + 0.1) {
+                    clearInterval(animationInterval);
+                }
+            }, 100);
+        }
+        
+        // Pausar la animación
+        function pauseAnimation() {
+            clearInterval(animationInterval);
+        }
+        
+        // Reiniciar la animación
+        function resetAnimation() {
+            pauseAnimation();
+            currentTime = 0;
+            const Ts = parseFloat(tempRoomInput.value);
+            const fillHeight = ((98.6 - 70) / 30) * 100;
+            thermometerFill.style.height = `${Math.max(0, Math.min(100, fillHeight))}%`;
+        }
+        
+        // Reiniciar los valores a los predeterminados
+        function resetValues() {
+            tempInitialInput.value = "79.5";
+            tempHourLaterInput.value = "78.0";
+            tempRoomInput.value = "69.0";
+            tempNormalInput.value = "98.6";
+            calculateTimeOfDeath();
+            resetAnimation();
+        }
+        
+        // Event Listeners
+        calculateBtn.addEventListener('click', calculateTimeOfDeath);
+        
+        resetBtn.addEventListener('click', resetValues);
+        
+        playBtn.addEventListener('click', startAnimation);
+        
+        pauseBtn.addEventListener('click', pauseAnimation);
+        
+        resetSimBtn.addEventListener('click', resetAnimation);
+        
+        // Inicializar la aplicación cuando se carga la página
+        window.addEventListener('load', function() {
+            createParticles();
+            initChart();
+        });
+    </script>
+</body>
+</html>
